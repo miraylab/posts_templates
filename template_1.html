@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miray Post</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #111; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .miray-wrap {
+      width: 1080px;
+      height: 1350px;
+      background: #0d0d0d;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .miray-noise {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.06;
+    }
+    .miray-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .miray-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 48px 64px 0;
+    }
+    .miray-logo img {
+      height: 28px;
+      display: block;
+      border: 0;
+      outline: 0;
+      background: transparent;
+    }
+    .miray-tagline {
+      font-size: 17px;
+      font-weight: 500;
+      color: #888;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .miray-profile {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 56px 64px 0;
+    }
+    .miray-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2ec98e 0%, #1a7a5e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      border: 2px solid #2ec98e44;
+      overflow: hidden;
+    }
+    .miray-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      border-radius: 50%;
+    }
+    .miray-profile-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .miray-verified {
+      width: 26px;
+      height: 26px;
+      background: #1d9bf0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .miray-verified svg { width: 14px; height: 14px; }
+    .miray-handle {
+      font-size: 22px;
+      color: #888;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+    .miray-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 64px 40px;
+    }
+    .miray-headline {
+      font-size: 102px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 72px;
+    }
+    .miray-sub {
+      font-size: 68px;
+      font-weight: 800;
+      color: #5a5a5a;
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      margin-bottom: 28px;
+    }
+    .miray-caption {
+      font-size: 30px;
+      color: #4a4a4a;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+  </style>
+</head>
+<body>
+  <div class="miray-wrap" id="miray-wrap">
+    <canvas class="miray-noise" id="noise-canvas"></canvas>
+
+    <div class="miray-content">
+      <div class="miray-topbar">
+        <div class="miray-logo">
+          <img id="tpl-logo" src="" alt="logo" />
+        </div>
+        <div class="miray-tagline" id="tpl-tagline"></div>
+      </div>
+
+      <div class="miray-profile">
+        <div class="miray-avatar" id="tpl-avatar"></div>
+        <div>
+          <div class="miray-profile-name">
+            <span id="tpl-profile-name"></span>
+            <span class="miray-verified">
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10.5L8 14.5L16 6.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="miray-handle" id="tpl-handle"></div>
+        </div>
+      </div>
+
+      <div class="miray-main">
+        <div class="miray-headline" id="tpl-headline"></div>
+        <div class="miray-sub" id="tpl-sub"></div>
+        <div class="miray-caption" id="tpl-caption"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =============================================
+       TEMPLATE â€” edite apenas este JSON!
+    ============================================= */
+    const fixedContent = {
+      background:       "#0d0d0d",
+      logo:             "https://res.cloudinary.com/dblwlsuqv/image/upload/v1778604036/Name_Branco_befiwz.svg",
+      taglineText:      "The Future Begins With People",
+      taglineColor:     "#888888",
+      avatarImage:      "https://res.cloudinary.com/dblwlsuqv/image/upload/v1780165096/VeP_pwcobs.png",
+      profileNameText:  "MIRAY | Estratégia em Dados",
+      profileNameColor: "#ffffff",
+      handleText:       "@miraylab",
+      handleColor:      "#888888"
+    };
+
+    const content = {
+      headlineText:     "Você não tem problema de gestão.",
+      headlineColor:    "#ffffff",
+      subText:          "Você tem problema de informação.",
+      subColor:         "#5a5a5a",
+      captionText:      "(Só que ainda não sabe disso)",
+      captionColor:     "#4a4a4a"
+    };
+    /* ============================================= */
+
+    // Fundo
+    document.getElementById('miray-wrap').style.background = fixedContent.background;
+
+    // Topo
+    document.getElementById('tpl-logo').src                      = fixedContent.logo;
+    document.getElementById('tpl-tagline').textContent           = fixedContent.taglineText;
+    document.getElementById('tpl-tagline').style.color           = fixedContent.taglineColor;
+
+    // Avatar
+    const avatarEl = document.getElementById('tpl-avatar');
+    const img = document.createElement('img');
+    img.src = fixedContent.avatarImage;
+    img.alt = fixedContent.profileNameText;
+    avatarEl.appendChild(img);
+
+    // Perfil
+    document.getElementById('tpl-profile-name').textContent      = fixedContent.profileNameText;
+    document.getElementById('tpl-profile-name').style.color      = fixedContent.profileNameColor;
+    document.getElementById('tpl-handle').textContent            = fixedContent.handleText;
+    document.getElementById('tpl-handle').style.color            = fixedContent.handleColor;
+
+    // Textos
+    document.getElementById('tpl-headline').textContent          = content.headlineText;
+    document.getElementById('tpl-headline').style.color          = content.headlineColor;
+    document.getElementById('tpl-sub').textContent               = content.subText;
+    document.getElementById('tpl-sub').style.color               = content.subColor;
+    document.getElementById('tpl-caption').textContent           = content.captionText;
+    document.getElementById('tpl-caption').style.color           = content.captionColor;
+
+    const canvas = document.getElementById('noise-canvas');
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.createImageData(1080, 1350);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const v = Math.random() * 255;
+      data[i] = v; data[i+1] = v; data[i+2] = v; data[i+3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  </script>
+</body>
+</html>
+
